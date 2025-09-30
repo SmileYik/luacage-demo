@@ -1,0 +1,63 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Update package list
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  update-package-list:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '21' ]
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Set up JDK ${{ matrix.Java }} 
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ matrix.Java }} 
+        distribution: 'temurin'
+
+    # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
+    # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+    - name: Build with Gradle Wrapper
+      id: update
+      run: |
+        git clone https://github.com/SmileYik/LuaInMinecraftBukkitII.git
+        cd LuaInMinecraftBukkitII
+        git submodule update --init --recursive
+        chmod +x ./gradlew
+        luainminecraftbukkit_luacage_build="$(pwd)/../repo" ./gradlew runServer -PWorkflow=YES -PTargetJava=${{ matrix.Java }} > log
+        grep -q "org.eu.smileyik.luaInMinecraftBukkitII" ./log && { echo "存在报错信息，终止！" >&2; exit 1; }
+        cd ..
+        if [[ $(git status --porcelain) ]]; then
+          echo "changes_made=true" >> $GITHUB_OUTPUT
+        else
+          echo "changes_made=false" >> $GITHUB_OUTPUT
+        fi
+    - name: Commit and Push Changes
+      if: steps.update.outputs.changes_made == 'true'
+      uses: EndBug/add-and-commit@v9
+      with:
+        author_name: GitHub Actions Bot
+        author_email: actions@github.com
+        message: 'chore(auto): Auto generate package list'
+        add: 'luacage.json'
