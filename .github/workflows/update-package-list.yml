@@ -27,7 +27,15 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+  
+    - name: Changed Lua Files
+      uses: tj-actions/changed-files@v47.0.0
+      with:
+        files: |
+          repo/packages/**/*.lua
+    
     - name: Set up JDK ${{ matrix.Java }} 
+      if: steps.changed-files-specific.outputs.any_changed == 'true'
       uses: actions/setup-java@v4
       with:
         java-version: ${{ matrix.Java }} 
@@ -36,9 +44,11 @@ jobs:
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
+      if: steps.changed-files-specific.outputs.any_changed == 'true'
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
     - name: Build with Gradle Wrapper
+      if: steps.changed-files-specific.outputs.any_changed == 'true'
       id: update
       run: |
         git clone https://github.com/SmileYik/LuaInMinecraftBukkitII.git
@@ -55,8 +65,21 @@ jobs:
         else
           echo "changes_made=false" >> $GITHUB_OUTPUT
         fi
+        
+    - name: Print luacage.json
+      if: |
+        steps.changed-files-specific.outputs.any_changed == 'true' &&
+        steps.update.outputs.changes_made == 'true'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq
+        jq . repo/luacage.json
+        
     - name: Commit and Push Changes
-      if: steps.update.outputs.changes_made == 'true'
+      if: |
+        steps.changed-files-specific.outputs.any_changed == 'true' &&
+        steps.update.outputs.changes_made == 'true' && 
+        github.event_name != 'pull_request'
       uses: EndBug/add-and-commit@v9
       with:
         author_name: GitHub Actions Bot
