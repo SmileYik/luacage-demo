@@ -12,7 +12,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  update-package-list:
+  package-check:
 
     runs-on: ubuntu-latest
     strategy:
