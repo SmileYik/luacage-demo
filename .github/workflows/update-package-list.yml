@@ -10,8 +10,6 @@ name: Update package list
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
   update-package-list:
@@ -32,7 +30,7 @@ jobs:
       uses: tj-actions/changed-files@v47.0.0
       with:
         files: |
-          **.lua
+          repo/packages/**/*.lua
     
     - name: Set up JDK ${{ matrix.Java }} 
       if: steps.changed-files-specific.outputs.any_changed == 'true'
