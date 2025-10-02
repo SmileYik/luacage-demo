@@ -69,7 +69,7 @@ jobs:
     - name: Print luacage.json
       if: |
         steps.changed-files-specific.outputs.any_changed == 'true' &&
-        steps.update.outputs.changes_made == 'true' && 
+        steps.update.outputs.changes_made == 'true'
       run: |
         sudo apt-get update
         sudo apt-get install -y jq
