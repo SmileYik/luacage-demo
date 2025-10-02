@@ -62,4 +62,4 @@ jobs:
         author_name: GitHub Actions Bot
         author_email: actions@github.com
         message: 'chore(auto): Auto generate package list'
-        add: 'repo/luacage.json'
+        add: 'repo/luacage.json*'
