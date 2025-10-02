@@ -32,7 +32,7 @@ jobs:
       uses: tj-actions/changed-files@v47.0.0
       with:
         files: |
-          repo/packages/**/*.lua
+          **.lua
     
     - name: Set up JDK ${{ matrix.Java }} 
       if: steps.changed-files-specific.outputs.any_changed == 'true'
