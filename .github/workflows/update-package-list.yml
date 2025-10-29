@@ -53,6 +53,8 @@ jobs:
         cd $CURRENT_DIR
         # generate lua package
         git submodule update --init --recursive
+        find ./repo -type d -name ".git" -exec rm -rf {} +
+        cp -r repo/* $REPO_DIR
         git clone https://github.com/SmileYik/LuaInMinecraftBukkitII.git
         cd LuaInMinecraftBukkitII
         git submodule update --init --recursive
@@ -69,8 +71,6 @@ jobs:
         fi
         # prepare repo files
         cd $CURRENT_DIR
-        find ./repo -type d -name ".git" -exec rm -rf {} +
-        cp -r repo/* $REPO_DIR
         cd $REPO_DIR
         ls -la
         git status
