@@ -46,7 +46,9 @@ jobs:
         cp -r $CURRENT_DIR newbranch
         cd newbranch
         git switch repo || git switch -c repo
+        ls -la
         rm -rf *
+        ls -la
         REPO_DIR=$(pwd)
         cd $CURRENT_DIR
         # generate lua package
@@ -70,6 +72,7 @@ jobs:
         find ./repo -type d -name ".git" -exec rm -rf {} +
         cp -r repo/* $REPO_DIR
         cd $REPO_DIR
+        ls -la
         git status
         
     # - name: Print luacage.json
