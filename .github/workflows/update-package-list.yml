@@ -40,6 +40,17 @@ jobs:
     - name: Build with Gradle Wrapper
       id: update
       run: |
+        CURRENT_DIR=$(pwd)
+        # prepare repo
+        cd ..
+        cp -r $CURRENT_DIR newbranch
+        cd newbranch
+        git switch repo || git switch -c repo
+        rm -rf *
+        REPO_DIR=$(pwd)
+        cd $CURRENT_DIR
+        # generate lua package
+        git submodule update --init --recursive
         git clone https://github.com/SmileYik/LuaInMinecraftBukkitII.git
         cd LuaInMinecraftBukkitII
         git submodule update --init --recursive
@@ -54,6 +65,10 @@ jobs:
         else
           echo "changes_made=false" >> $GITHUB_OUTPUT
         fi
+        # prepare repo files
+        cd $CURRENT_DIR
+        find ./repo -type d -name ".git" -exec rm -rf {} +
+        cp -r repo/* $REPO_DIR
         
     - name: Print luacage.json
       if: |
@@ -70,4 +85,4 @@ jobs:
         author_name: GitHub Actions Bot
         author_email: actions@github.com
         message: 'chore(auto): Auto generate package list'
-        add: 'repo/luacage.json*'
+        cwd: '../newbranch'
