@@ -46,7 +46,6 @@ jobs:
         cp -r $CURRENT_DIR newbranch
         cd newbranch
         git switch repo || git switch -c repo
-        git branch --set-upstream-to=origin/repo
         rm -rf *
         REPO_DIR=$(pwd)
         cd $CURRENT_DIR
@@ -71,13 +70,13 @@ jobs:
         find ./repo -type d -name ".git" -exec rm -rf {} +
         cp -r repo/* $REPO_DIR
         
-    - name: Print luacage.json
-      if: |
-        steps.update.outputs.changes_made == 'true'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y jq
-        jq . repo/luacage.json
+    # - name: Print luacage.json
+    #   if: |
+    #     steps.update.outputs.changes_made == 'true'
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y jq
+    #     jq . repo/luacage.json
         
     - name: Commit and Push Changes
       if: steps.update.outputs.changes_made == 'true'
@@ -87,3 +86,4 @@ jobs:
         author_email: actions@github.com
         message: 'chore(auto): Auto generate package list'
         cwd: '../newbranch'
+        new_branch: "repo"
