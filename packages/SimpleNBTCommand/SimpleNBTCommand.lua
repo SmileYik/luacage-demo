@@ -46,6 +46,7 @@ local function splitNbtPath(path)
     return split
 end
 
+-- get item in main hand
 local function getItemInMainHand(sender)
     local item = sender:getInventory():getItemInMainHand()
     if not item or item:getAmount() == 0 then
