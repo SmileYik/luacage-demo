@@ -68,7 +68,7 @@ jobs:
         # prepare repo files
         cd $CURRENT_DIR
         find ./repo -type d -name ".git" -exec rm -rf {} +
-        cp -r repo/* $REPO_DIR
+        mv repo/* $REPO_DIR
         
     # - name: Print luacage.json
     #   if: |
