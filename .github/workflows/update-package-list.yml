@@ -46,6 +46,7 @@ jobs:
         cp -r $CURRENT_DIR newbranch
         cd newbranch
         git switch repo || git switch -c repo
+        git branch --set-upstream-to=origin/repo
         rm -rf *
         REPO_DIR=$(pwd)
         cd $CURRENT_DIR
