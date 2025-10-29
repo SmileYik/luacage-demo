@@ -59,7 +59,7 @@ jobs:
         chmod +x ./gradlew
         mkdir run
         echo "eula=true" > run/eula.txt
-        luainminecraftbukkit_luacage_build="$(pwd)/../repo" ./gradlew runServer -PWorkflow=YES -PTargetJava=${{ matrix.Java }}
+        luainminecraftbukkit_luacage_build="$REPO_DIR" ./gradlew runServer -PWorkflow=YES -PTargetJava=${{ matrix.Java }}
         grep -q "org.eu.smileyik.luaInMinecraftBukkitII" ./run/logs/latest.log && { echo "存在报错信息，终止！" >&2; exit 1; }
         cd ..
         if [[ $(git status --porcelain) ]]; then
