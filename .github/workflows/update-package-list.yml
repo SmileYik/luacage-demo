@@ -41,27 +41,28 @@ jobs:
       id: update
       run: |
         CURRENT_DIR=$(pwd)
+        MASTER_REPO_DIR="$CURRENT_DIR/repo"
+        NEW_REPO_DIR="$CURRENT_DIR/../newbranch"
+        LII_REPO_URL="https://github.com/SmileYik/LuaInMinecraftBukkitII.git"
+
         # prepare repo
         cd ..
-        cp -r $CURRENT_DIR newbranch
-        cd newbranch
+        cp -r $CURRENT_DIR $NEW_REPO_DIR
+        cd $NEW_REPO_DIR
         git switch repo || git switch -c repo
-        ls -la
         rm -rf *
-        ls -la
-        REPO_DIR=$(pwd)
         cd $CURRENT_DIR
         # generate lua package
         git submodule update --init --recursive
-        find ./repo -type d -name ".git" -exec rm -rf {} +
-        cp -r repo/* $REPO_DIR
-        git clone https://github.com/SmileYik/LuaInMinecraftBukkitII.git
+        find $MASTER_REPO_DIR -type d -name ".git" -exec rm -rf {} +
+        cp -r "$MASTER_REPO_DIR/*" $NEW_REPO_DIR
+        git clone $LII_REPO_URL
         cd LuaInMinecraftBukkitII
         git submodule update --init --recursive
         chmod +x ./gradlew
         mkdir run
         echo "eula=true" > run/eula.txt
-        luainminecraftbukkit_luacage_build="$REPO_DIR" ./gradlew runServer -PWorkflow=YES -PTargetJava=${{ matrix.Java }}
+        luainminecraftbukkit_luacage_build="$NEW_REPO_DIR" ./gradlew runServer -PWorkflow=YES -PTargetJava=${{ matrix.Java }}
         grep -q "org.eu.smileyik.luaInMinecraftBukkitII" ./run/logs/latest.log && { echo "存在报错信息，终止！" >&2; exit 1; }
         cd ..
         if [[ $(git status --porcelain) ]]; then
@@ -69,11 +70,6 @@ jobs:
         else
           echo "changes_made=false" >> $GITHUB_OUTPUT
         fi
-        # prepare repo files
-        cd $CURRENT_DIR
-        cd $REPO_DIR
-        ls -la
-        git status
         
     # - name: Print luacage.json
     #   if: |
