@@ -46,16 +46,19 @@ jobs:
         LII_REPO_URL="https://github.com/SmileYik/LuaInMinecraftBukkitII.git"
 
         # prepare repo
-        cd ..
         cp -r $CURRENT_DIR $NEW_REPO_DIR
         cd $NEW_REPO_DIR
         git switch repo || git switch -c repo
         rm -rf *
+
+        # init submodule and copy to new repo dir
         cd $CURRENT_DIR
-        # generate lua package
         git submodule update --init --recursive
-        find $MASTER_REPO_DIR -type d -name ".git" -exec rm -rf {} +
-        cp -r "$MASTER_REPO_DIR/*" $NEW_REPO_DIR
+        cd $MASTER_REPO_DIR
+        find . -type d -name ".git" -exec rm -rf {} +
+        cp -r * $NEW_REPO_DIR
+
+        # generate lua package
         git clone $LII_REPO_URL
         cd LuaInMinecraftBukkitII
         git submodule update --init --recursive
