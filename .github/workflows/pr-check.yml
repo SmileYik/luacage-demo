@@ -40,6 +40,7 @@ jobs:
     - name: Build with Gradle Wrapper
       id: update
       run: |
+        git submodule update --init --recursive
         git clone https://github.com/SmileYik/LuaInMinecraftBukkitII.git
         cd LuaInMinecraftBukkitII
         git submodule update --init --recursive
